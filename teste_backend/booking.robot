@@ -49,3 +49,21 @@ TC 5: criar reserva
 
     Status Should Be    200
     Dictionaries Should Be Equal    ${booking}    ${response.json()}
+
+TC 6: editar reserva
+    [Setup]    Wrapper POST /auth
+
+    ${response}       GET /booking
+    ${id}             Select Random BookingId From Json    ${response}
+    ${response}       GET /booking/${id}
+
+    ${body}    Change DepositPaid    ${response}
+    PATCH /booking/${id}    ${body}
+
+    Status Should Be    200
+    Validate Json    ${response}    PartialUpdateBooking.json
+
+    ${response}       GET /booking/${id}
+
+    Status Should Be    200
+    Dictionary Should Contain Sub Dictionary    ${response.json()}    ${body}

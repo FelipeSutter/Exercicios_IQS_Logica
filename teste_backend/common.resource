@@ -49,7 +49,20 @@ PUT /booking/${id}
     ${response}    PUT    url=${BASE_URL}/booking/${id}    json=${body}    headers=${headers}
     RETURN    ${response}
 
+PATCH /booking/${id}
+    [Arguments]    ${body}
+    ${headers}    Create Dictionary    Cookie=token\=${TOKEN}
+    ${response}    PATCH    url=${BASE_URL}/booking/${id}    json=${body}    headers=${headers}
+    RETURN    ${response}
+
 Select Random BookingId From Json
     [Arguments]    ${response}
     ${bookingid}    Evaluate    random.choice($response.json())['bookingid']    modules=random
     RETURN    ${bookingid}
+
+Change DepositPaid
+    [Arguments]    ${response}
+    ${depositpaid}    Convert To Boolean   ${response.json()}[depositpaid]
+    ${depositpaid}    Set Variable If    ${depositpaid}==${True}    ${False}    ${True}
+    ${body}    Create Dictionary    depositpaid=${depositpaid}
+    RETURN    ${body}
